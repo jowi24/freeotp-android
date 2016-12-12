@@ -20,23 +20,37 @@
 
 package org.fedorahosted.freeotp;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.Writer;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.squareup.picasso.Picasso;
 
 import org.fedorahosted.freeotp.edit.DeleteActivity;
 import org.fedorahosted.freeotp.edit.EditActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.WHITE;
 
 public class TokenAdapter extends BaseReorderableAdapter {
     private final TokenPersistence mTokenPersistence;
@@ -84,10 +98,10 @@ public class TokenAdapter extends BaseReorderableAdapter {
     }
 
     @Override
-    protected void bindView(View view, final int position) {
+    protected void bindView(final View view, final int position) {
         final Context ctx = view.getContext();
         TokenLayout tl = (TokenLayout) view;
-        Token token = getItem(position);
+        final Token token = getItem(position);
 
         tl.bind(token, R.menu.token, new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -99,6 +113,44 @@ public class TokenAdapter extends BaseReorderableAdapter {
                         i = new Intent(ctx, EditActivity.class);
                         i.putExtra(EditActivity.EXTRA_POSITION, position);
                         ctx.startActivity(i);
+                        break;
+
+                    case R.id.action_export:
+                        BitMatrix result;
+                        try {
+                            result = new MultiFormatWriter().encode(token.toString(),
+                                    BarcodeFormat.QR_CODE, 800, 800, null);
+                        } catch (IllegalArgumentException iae) {
+                            // Unsupported format
+                            break;
+                        } catch (WriterException e) {
+                            break;
+                        }
+                        int w = result.getWidth();
+                        int h = result.getHeight();
+                        int[] pixels = new int[w * h];
+                        for (int y = 0; y < h; y++) {
+                            int offset = y * w;
+                            for (int x = 0; x < w; x++) {
+                                pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+                            }
+                        }
+                        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                        bitmap.setPixels(pixels, 0, 800, 0, 0, w, h);
+
+                        ImageView image = new ImageView(view.getContext());
+                        image.setImageBitmap(bitmap);
+
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(view.getContext()).
+                                        setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        }).
+                                        setView(image);
+                        builder.create().show();
                         break;
 
                     case R.id.action_delete:
