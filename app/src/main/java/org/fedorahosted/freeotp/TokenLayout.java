@@ -108,6 +108,7 @@ public class TokenLayout extends FrameLayout implements View.OnClickListener, Ru
 
     public void start(Token.TokenType type, TokenCode codes, boolean animate) {
         mCodes = codes;
+        mCodes.setOffset(System.currentTimeMillis()%30000);
         mType = type;
 
         // Start animations.

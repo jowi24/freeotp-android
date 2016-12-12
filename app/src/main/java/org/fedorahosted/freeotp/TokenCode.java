@@ -25,6 +25,7 @@ public class TokenCode {
     private final long mStart;
     private final long mUntil;
     private TokenCode mNext;
+    private long offset;
 
     public TokenCode(String code, long start, long until) {
         mCode = code;
@@ -43,21 +44,21 @@ public class TokenCode {
     }
 
     public String getCurrentCode() {
-        TokenCode active = getActive(System.currentTimeMillis());
+        TokenCode active = getActive(System.currentTimeMillis() - offset);
         if (active == null)
             return null;
         return active.mCode;
     }
 
     public int getTotalProgress() {
-        long cur = System.currentTimeMillis();
+        long cur = System.currentTimeMillis() - offset;
         long total = getLast().mUntil - mStart;
         long state = total - (cur - mStart);
         return (int) (state * 1000 / total);
     }
 
     public int getCurrentProgress() {
-        long cur = System.currentTimeMillis();
+        long cur = System.currentTimeMillis() - offset;
         TokenCode active = getActive(cur);
         if (active == null)
             return 0;
@@ -81,5 +82,9 @@ public class TokenCode {
         if (mNext == null)
             return this;
         return this.mNext.getLast();
+    }
+
+    public void setOffset(long offset) {
+        this.offset = offset;
     }
 }
