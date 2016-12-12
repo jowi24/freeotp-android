@@ -86,6 +86,8 @@ public class TokenLayout extends FrameLayout implements View.OnClickListener, Ru
                 .load(token.getImage())
                 .placeholder(R.drawable.logo)
                 .into(mImage);
+        int padding = token.getPadding();
+        mImage.setPadding(padding, padding, padding, padding);
 
         // Set the labels.
         mLabel.setText(token.getLabel());

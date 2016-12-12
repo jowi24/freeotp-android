@@ -37,6 +37,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 
 import com.squareup.picasso.Picasso;
@@ -44,6 +45,7 @@ import com.squareup.picasso.Picasso;
 public class AddActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private final int SHA1_OFFSET = 1;
     private ImageButton mImage;
+    private SeekBar mSeekbarBorder;
     private EditText mIssuer;
     private EditText mLabel;
     private EditText mSecret;
@@ -60,6 +62,7 @@ public class AddActivity extends Activity implements View.OnClickListener, Compo
         setContentView(R.layout.add);
 
         mImage = (ImageButton) findViewById(R.id.image);
+        mSeekbarBorder = (SeekBar) findViewById(R.id.seekBarBorder);
         mIssuer = (EditText) findViewById(R.id.issuer);
         mLabel = (EditText) findViewById(R.id.label);
         mSecret = (EditText) findViewById(R.id.secret);
@@ -86,6 +89,23 @@ public class AddActivity extends Activity implements View.OnClickListener, Compo
         mLabel.addTextChangedListener(tw);
         mSecret.addTextChangedListener(new AddSecretTextWatcher(this));
         mInterval.addTextChangedListener(tw);
+
+        mSeekbarBorder.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mImage.setPadding(progress+8, progress+8, progress+8, progress+8);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -108,12 +128,13 @@ public class AddActivity extends Activity implements View.OnClickListener, Compo
                 String algorithm = mAlgorithm.getSelectedItem().toString().toLowerCase(Locale.US);
                 int interval = Integer.parseInt(mInterval.getText().toString());
                 int digits = ((RadioButton) findViewById(R.id.digits6)).isChecked() ? 6 : 8;
+                int padding = mSeekbarBorder.getProgress();
 
                 // Create the URI
                 String uri = String.format(Locale.US,
-                        "otpauth://%sotp/%s:%s?secret=%s&algorithm=%s&digits=%d&period=%d",
+                        "otpauth://%sotp/%s:%s?secret=%s&algorithm=%s&digits=%d&period=%d&padding=%d",
                         mHOTP.isChecked() ? "h" : "t", issuer, label,
-                        secret, algorithm, digits, interval);
+                        secret, algorithm, digits, interval, padding);
 
                 // Add optional parameters.
                 if (mHOTP.isChecked()) {

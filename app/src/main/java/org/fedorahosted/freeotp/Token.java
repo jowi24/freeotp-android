@@ -34,6 +34,16 @@ import com.google.android.apps.authenticator.Base32String;
 import com.google.android.apps.authenticator.Base32String.DecodingException;
 
 public class Token {
+    private int padding;
+
+    public void setPadding(int padding) {
+        this.padding = padding;
+    }
+
+    public int getPadding() {
+        return padding;
+    }
+
     public static class TokenUriInvalidException extends Exception {
         private static final long serialVersionUID = -1108624734612362345L;
     }
@@ -133,6 +143,7 @@ public class Token {
         }
 
         image = uri.getQueryParameter("image");
+        padding = uri.getQueryParameter("padding") == null ? 0 : Integer.parseInt(uri.getQueryParameter("padding"));
 
         if (internal) {
             setIssuer(uri.getQueryParameter("issueralt"));
@@ -265,7 +276,8 @@ public class Token {
                 .appendQueryParameter("issuer", issuerInt == null ? issuerExt : issuerInt)
                 .appendQueryParameter("algorithm", algo)
                 .appendQueryParameter("digits", Integer.toString(digits))
-                .appendQueryParameter("period", Integer.toString(period));
+                .appendQueryParameter("period", Integer.toString(period))
+                .appendQueryParameter("padding", Integer.toString(padding));
 
         switch (type) {
         case HOTP:

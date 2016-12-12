@@ -15,21 +15,44 @@
     <EditText
         android:id="@+id/issuer"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
         android:layout_toRightOf="@id/image"
         android:layout_marginTop="4dp"
         android:hint="jdoe@example.com"
         android:inputType="textNoSuggestions"
-        android:textAppearance="?android:attr/textAppearanceSmallInverse" />
+        android:textAppearance="?android:attr/textAppearanceSmallInverse"
+        android:layout_height="36dp" />
 
     <EditText
         android:id="@+id/label"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
         android:layout_toRightOf="@id/image"
         android:layout_below="@id/issuer"
         android:layout_marginBottom="4dp"
         android:hint="18c5d06cfcbd4927"
         android:inputType="textNoSuggestions"
-        android:textAppearance="?android:attr/textAppearanceSmallInverse" />
+        android:textAppearance="?android:attr/textAppearanceSmallInverse"
+        android:layout_height="36dp" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBarBorder"
+        android:layout_below="@+id/label"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textView"
+        android:max="20"
+        style="@android:style/Widget.Material.SeekBar" />
+
+    <TextView
+        android:text="Image border:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:paddingRight="8dp"
+        android:layout_alignBottom="@+id/seekBarBorder"
+        android:layout_toRightOf="@+id/image"
+        android:layout_toEndOf="@+id/image"
+        android:paddingLeft="4dp" />
+
 </RelativeLayout>
