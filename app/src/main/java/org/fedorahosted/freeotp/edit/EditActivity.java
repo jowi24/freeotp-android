@@ -25,8 +25,10 @@ import org.fedorahosted.freeotp.Token;
 import org.fedorahosted.freeotp.TokenPersistence;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -37,6 +39,10 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class EditActivity extends BaseActivity implements TextWatcher, View.OnClickListener {
     private EditText           mIssuer;
@@ -135,8 +141,24 @@ public class EditActivity extends BaseActivity implements TextWatcher, View.OnCl
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK)
-            showImage(data.getData());
+        if (resultCode == RESULT_OK) {
+            Uri imageUri = data.getData();
+            try {
+                int i = 0;
+                File f;
+                String filename;
+                do {
+                    filename = getApplicationInfo().dataDir + "/img_" + i + ".png";
+                    f = new File(filename);
+                } while (f.exists());
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                FileOutputStream out = new FileOutputStream(filename);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                showImage(Uri.fromFile(f));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
