@@ -148,7 +148,7 @@ public class EditActivity extends BaseActivity implements TextWatcher, View.OnCl
                 File f;
                 String filename;
                 do {
-                    filename = getApplicationInfo().dataDir + "/img_" + i + ".png";
+                    filename = getApplicationInfo().dataDir + "/img_" + i++ + ".png";
                     f = new File(filename);
                 } while (f.exists());
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
